@@ -21,8 +21,6 @@ prepare() {
 
 build() {
   cd OpenSceneGraph-$pkgver
-#  CFLAGS="$CFLAGS -D__STDC_CONSTANT_MACROS"
-#  CXXFLAGS="$CXXFLAGS -D__STDC_CONSTANT_MACROS"
   [ $NOEXTRACT -eq 1 ] || cmake . \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=Release
