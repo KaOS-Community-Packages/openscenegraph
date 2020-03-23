@@ -1,35 +1,30 @@
 pkgname=openscenegraph
-pkgver=3.4.0
+pkgver=3.6.5
 pkgrel=1
-pkgdesc="An Open Source, high performance real-time graphics toolkit"
+pkgdesc='Open Source, high performance real-time graphics toolkit'
+url='http://www.openscenegraph.org'
 arch=('x86_64')
 license=('custom:OSGPL')
-url="http://www.openscenegraph.org"
 depends=('giflib' 'jasper' 'librsvg' 'xine-lib' 'curl' 'pth')
 makedepends=('cmake' 'libvncserver' 'qt5-base' 'ffmpeg' 'mesa')
-optdepends=('libvncserver' 'gdal' 'openexr' 'poppler-glib' 'qt5-base' 'ffmpeg')
-source=("http://trac.openscenegraph.org/downloads/developer_releases/OpenSceneGraph-${pkgver}.zip"
-        "openscenegraph-ffmpeg3.patch")
-md5sums=('a5e762c64373a46932e444f6f7332496'
-         'f32564a54e944da1798aafdfacf996a3')
-
-prepare() {
-  cd OpenSceneGraph-$pkgver
-# Fix build with ffmpeg 3.0
-  patch -p2 -i ../openscenegraph-ffmpeg3.patch
-}
+optdepends=('libvncserver' 'gdal' 'openexr' 'qt5-base' 'ffmpeg')
+source=(https://github.com/openscenegraph/OpenSceneGraph/archive/OpenSceneGraph-${pkgver}.tar.gz)
+sha256sums=('aea196550f02974d6d09291c5d83b51ca6a03b3767e234a8c0e21322927d1e12')
+sha512sums=('7002fa30a3bcf6551d2e1050b4ca75a3736013fd190e4f50953717406864da1952deb09f530bc8c5ddf6e4b90204baec7dbc283f497829846d46d561f66feb4b')
 
 build() {
-  cd OpenSceneGraph-$pkgver
-  [ $NOEXTRACT -eq 1 ] || cmake . \
+  mkdir -p OpenSceneGraph-OpenSceneGraph-${pkgver}/build
+  cd OpenSceneGraph-OpenSceneGraph-${pkgver}/build
+  cmake \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DCMAKE_BUILD_TYPE=Release
-  make
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+  ..
+  VERBOSE=1 make
 }
 
 package() {
-  cd OpenSceneGraph-$pkgver
-  make DESTDIR="$pkgdir" install
-  install -D -m644 LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
-  [ -d "$pkgdir/usr/lib64" ] && mv "$pkgdir/usr/lib64" "$pkgdir/usr/lib" || true
+  cd OpenSceneGraph-OpenSceneGraph-${pkgver}
+  make -C build DESTDIR="${pkgdir}" install
+  install -Dm 644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
 }
